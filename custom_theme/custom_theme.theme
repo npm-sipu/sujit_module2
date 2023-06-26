@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file
+ * Implement hook_suggestion_HOOK_alter.
+ */
+
+/**
+ * Function.
+ */
+function custom_theme_suggestions_node_alter(array &$suggestions, array $variables) {
+  if (\Drupal::currentUser()->isAnonymous()) {
+    $suggestions[] = "node__anonymous";
+  }
+}

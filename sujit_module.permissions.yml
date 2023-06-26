@@ -1,0 +1,10 @@
+#creating new permission
+sujit module config form permission:   #machine name of the permission
+  title: config form Page permission #title of the permission
+  description: description  #description of the permission
+
+controller permission:
+  title: 'Controller Task permission'
+  description: 'Administer Controller task settings Settings'
+permission_callbacks:
+  - \Drupal\sujit_module\DynamicPermission::dynamicPermissions

@@ -1,0 +1,21 @@
+#to create tabs
+sujit_module.custom_form: #machine name
+  route_name: sujit_module.custom_form #where the tab should lead to
+  title : custom form #title of the tab
+  base_route: sujit_module.hello_world #where the tab should appear
+  weight: 10
+
+
+
+sujit_module.config_form: #machine name
+  route_name: sujit_module.config_form #where the tab should lead to
+  title : config form #title of the tab
+  base_route: sujit_module.hello_world #where the tab should appear
+  weight: 20
+
+
+sujit_module.hello_world: #machine name
+  route_name: sujit_module.hello_world #where the tab should lead to
+  title : controller #title of the tab
+  base_route: sujit_module.hello_world #where the tab should appear
+  weight: 30

@@ -1,0 +1,5 @@
+add_content.article: #machine name
+  route_name: "sujit_module.config_form" #where the button should take us to
+  title: "Config form" #title
+  appears_on:
+    - "sujit_module.custom_form" # where the button should appear

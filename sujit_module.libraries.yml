@@ -1,0 +1,7 @@
+sujit_module_styles: #library name
+  version: 1.x
+  css:
+    theme:
+      css/sujit_module_styles.css: {}   #we are adding css file in libraries so it can be accessed wherever we want.
+  js:
+    js/js-form.js: {}

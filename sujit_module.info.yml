@@ -1,0 +1,4 @@
+name: 'sujit module' #name of the module
+description: 'Custom Task' #description of the module
+type: module #type of the folder
+core_version_requirement: ^9 || ^10 #minimum version of the drupal instance

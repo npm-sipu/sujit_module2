@@ -1,0 +1,78 @@
+sujit_module.hello_world: # Route name for controller
+  path: '/hello-world' # Path
+  defaults:
+    _controller: '\Drupal\sujit_module\Controller\CustomController::hello' # Class and function
+    _title: 'Hello World' # Title
+  requirements:
+    _permission: 'access content' # Permission required
+
+sujit_module.custom_form: # Route name for custom form page
+  path: '/get-details' # Path
+  defaults:
+    _form: '\Drupal\sujit_module\Form\CustomForm' # Class and function
+    _title: 'Custom Form to Get User Details' # Title
+  requirements:
+    _permission: 'access content' # Permission required
+
+sujit_module.config_form: # Route name for config form
+  path: '/config-form' # Path
+  defaults:
+    _form: '\Drupal\sujit_module\Form\ConfigForm' # Class and function
+    _title: 'Custom Configuration Form' # Title
+  requirements:
+    _permission: 'sujit module config form permission' # Permission required
+  options:
+    _admin_route: true # Admin theme
+
+sujit_module.dependent_drop: # Route name for custom form page
+  path: '/dropdown' # Path
+  defaults:
+    _form: '\Drupal\sujit_module\Form\DependentDrop' # Class and function
+    _title: 'Dropdown' # Title
+  requirements:
+    _permission: 'access content' # Permission required
+
+sujit_module.dependent_form: # Route name
+  path: '/dropdown-form' # Path
+  defaults:
+    _form: '\Drupal\sujit_module\Form\DropdownForm' # Class and function
+    _title: 'Dropdown Form' # Title
+  requirements:
+    _permission: 'access content' # Permission required
+
+sujit_module.controller_task:
+  path: '/node/{node}/title'
+  defaults:
+    _controller: '\Drupal\sujit_module\Controller\ControllerTask::nodeTitle'
+    _title_callback: '\Drupal\sujit_module\Controller\ControllerTask::titleCallback'
+  options:
+    _admin_route: true
+    parameters:
+      node:
+        type: entity:node
+  requirements:
+    _custom_access: '\Drupal\sujit_module\Controller\ControllerTask::cloneNode'
+
+sujit_module.jquery_form: # Route name
+  path: '/jsform' # Path
+  defaults:
+    _form: '\Drupal\sujit_module\Form\JsForm' # Class and function
+    _title: 'Js Callback Form' # Title
+  requirements:
+    _permission: 'access content' # Permission required
+
+sujit_module.modal_page:
+  path: '/modal-link'
+  defaults:
+    _controller: '\Drupal\sujit_module\Controller\CustomModal::modalLink'
+    _title: 'Open Modal Page'
+  requirements:
+    _permission: 'access content'
+
+sujit_module.task_form: # Route name for config form
+  path: '/task-form' # Path
+  defaults:
+    _form: '\Drupal\sujit_module\Form\TaskForm' # Class and function
+    _title: 'Configuration Form' # Title
+  requirements:
+    _permission: 'access content' # Permission required

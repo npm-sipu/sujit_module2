@@ -1,0 +1,170 @@
+<?php
+
+/**
+ * @file
+ * File.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\sujit_module\Event\UserLoginEvent;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function sujit_module_theme($existing, $type, $theme, $path) {
+  // Initializing theme, template and the variables.
+  return [
+    'new_template' => [
+      'variables' => [
+        'markup' => "",
+        'hexcode' => "",
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function sujit_module_user_login($account) {
+  // Instantiate our event.
+  $event = new UserLoginEvent($account);
+  // Triggering the event_dispatcher service and dispatch the event.
+  $event_dispatcher = \Drupal::service('event_dispatcher');
+  $event_dispatcher->dispatch($event, UserLoginEvent::EVENT_NAME);
+}
+
+/**
+ * Implements hook_page_attachments_alter().
+ */
+function sujit_module_page_attachments_alter(array &$attachments) {
+  $attachments['#attached']['library'][] = 'sujit_module/sujit_module_styles';
+  $attachments['#attached']['drupalSettings']['sujit_module']['testing'] = "testings";
+  // Calling the service.
+  $route_match = \Drupal::routeMatch();
+  // Getting the route name of the particular page.
+  $route_name = $route_match->getRouteName();
+  // If the route name matches.
+  if ($route_name === 'comment.admin') {
+    // Apply the css.
+    $attachments['#attached']['library'][] = 'sujit_module/sujit_module_styles';
+  }
+  // If the route name matches.
+  elseif ($route_name === 'entity.node.canonical') {
+    // Apply the css.
+    $attachments['#attached']['library'][] = 'sujit_module/sujit_module_styles';
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function sujit_module_mail($key, &$message, $params) {
+  $options = [
+    'langcode' => $message['langcode'],
+  ];
+
+  switch ($key) {
+    case 'create_page':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('Page created: @title', ['@title' => $params['node_title']], $options);
+      $message['body'][] = $params['message'];
+      break;
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function sujit_module_entity_insert(EntityInterface $entity) {
+
+  if ($entity->getEntityTypeId() !== 'node' || ($entity->getEntityTypeId() === 'node' && $entity->bundle() !== 'page')) {
+    return;
+  }
+
+  $mailManager = \Drupal::service('plugin.manager.mail');
+
+  $module = 'sujit_module';
+  $key = 'create_page';
+  $to = \Drupal::currentUser()->getEmail();
+  $params['message'] = $entity->get('body')->value;
+  $params['node_title'] = $entity->label();
+  $langcode = \Drupal::currentUser()->getPreferredLangcode();
+  $send = TRUE;
+
+  $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+  if ($result['result'] !== TRUE) {
+
+    \Drupal::messenger()->addMessage(t('There was a problem sending your message and it was not sent'), 'error');
+    // drupal_set_message.
+  }
+  else {
+
+    \Drupal::messenger()->addMessage(t('There was a problem sending your message and it was not sent'), 'status');
+    // drupal_set_message(t('Your message has been sent.'));.
+  }
+
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function sujit_module_entity_presave(EntityInterface $entity) {
+  $entity->set("title", "presaving the values");
+}
+
+/**
+ * Implements hook_entity_view_alter().
+ */
+function sujit_module_entity_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display) {
+  if ($entity->getEntityTypeId() == "node") {
+    // Changing the title.
+    $build['field_tags']['#title'] = "title from view alter";
+    // Image field is removed.
+    unset($build['field_image']);
+    $build['markup'] = [
+    // Static text we are adding.
+      '#markup' => "<h3>Testing entity view alter hook</h3>",
+    ];
+  }
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function sujit_module_entity_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  // Condition entity type = node.
+  $session = \Drupal::request()->getSession();
+  $counts = $session->get("sujit_module.node_view_count", []);
+  if (!isset($counts[$entity->id()])) {
+    $counts[$entity->id()] = 1;
+  }
+  else {
+    $counts[$entity->id()]++;
+  }
+
+  $session->set("sujit_module.node_view_count", $counts);
+  $build['count'] = [
+    '#markup' => "Viewed " . $counts[$entity->id()] . " times",
+    '#cache' => [
+      'max-age' => 0,
+    ],
+  ];
+
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function sujit_module_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == "node_page_edit_form") {
+    $helptext = \Drupal::configFactory()->getEditable("sujit_module.settings")->get("helptext");
+    // type: node object.
+    $node = \Drupal::routeMatch()->getParameter("node");
+    $token_service = \Drupal::token();
+    $hlptxt = $token_service->replace($helptext, ['node' => $node], ['clear' => TRUE]);
+    $form['#prefix'] = "<span>" . $hlptxt . "</span>";
+  }
+}

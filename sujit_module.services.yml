@@ -1,0 +1,22 @@
+services:
+  sujit_module.custom_service:   # Our custom service
+    class: Drupal\sujit_module\CustomService # Define the class and its location
+    arguments: ['@config.factory']  # Service arguments
+
+  sujit_module.event_subscriber: # Creating an event subscriber
+    class: '\Drupal\sujit_module\EventSubscriber\EventSubscriberDemo' # Location of the event subscriber class
+    tags:
+      - { name: 'event_subscriber' } # Tag to identify it as an event subscriber
+    arguments: ['@messenger']
+
+  sujit_module.drush_commands:  # Creating a Drush command
+    class: Drupal\sujit_module\Commands\DrushCommandsDemo # Location of the Drush commands class
+    arguments: ['@entity_type.manager']  # Including the argument
+    tags:
+      - { name: drush.command }
+
+  sujit_module.user_login_subscriber:
+    class: '\Drupal\sujit_module\EventSubscriber\UserLoginSubs'
+    tags:
+      - { name: 'event_subscriber' }
+    arguments: ['@database', '@date.formatter', '@messenger']

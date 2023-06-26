@@ -1,0 +1,180 @@
+<?php
+
+/**
+ * @file
+ * File.
+ */
+
+use Drupal\Core\Database\Schema\SchemaObjectInterface;
+
+/**
+ * Implements hook_schema().
+ */
+function sujit_module_schema() {
+  // Function defining our schema.
+  // New scheme user information.
+  $schema['user_information'] = [
+    // Description.
+    'description' => 'Stores user details',
+    // Fields are defined below.
+    'fields' => [
+      'id' => [
+        'description' => 'serial number',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'firstname' => [
+        'description' => 'Firstname of the user',
+        'type' => 'varchar',
+        'length' => 60,
+        'not null' => TRUE,
+      ],
+      'lastname' => [
+        'description' => 'Last Name of the user',
+        'type' => 'varchar',
+        'length' => 60,
+        'not null' => TRUE,
+      ],
+      'email' => [
+        'description' => 'Email of the user',
+        'type' => 'varchar',
+        'length' => 60,
+        'not null' => TRUE,
+      ],
+      'gender' => [
+        'description' => 'gender of the user',
+        'type' => 'varchar',
+        'length' => 60,
+        'not null' => TRUE,
+      ],
+    ],
+    // Primary key is selected.
+    'primary key' => ['id'],
+  ];
+  // To return schema.
+  return $schema;
+}
+
+
+
+/**
+ * Implements hook_update().
+ */
+function sujit_module_update_101002() {
+  $database = \Drupal::database();
+  $schema = $database->schema();
+  $country_table_name = 'country';
+  $country_table_schema = [
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'size' => 'big',
+        'not null' => TRUE,
+      ],
+      'name' => [
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 100,
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+  $schema->createTable($country_table_name, $country_table_schema);
+  $countries = [
+    ['name' => 'USA'],
+    ['name' => 'UK'],
+    ['name' => 'Canada'],
+  ];
+  foreach ($countries as $country) {
+    $database->insert($country_table_name)
+      ->fields($country)
+      ->execute();
+  }
+  $state_table_name = 'state';
+  $state_table_schema = [
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'size' => 'big',
+        'not null' => TRUE,
+      ],
+      'country_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'name' => [
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 100,
+      ],
+    ],
+    'primary key' => ['id'],
+    'foreign keys' => [
+      'country_id' => [
+        'table' => 'country',
+        'column' => 'id',
+      ],
+    ],
+  ];
+  $schema->createTable($state_table_name, $state_table_schema);
+  $states = [
+    ['country_id' => 1, 'name' => 'California'],
+    ['country_id' => 1, 'name' => 'New York'],
+    ['country_id' => 1, 'name' => 'Texas'],
+    ['country_id' => 2, 'name' => 'England'],
+    ['country_id' => 2, 'name' => 'Scotland'],
+    ['country_id' => 3, 'name' => 'Ontario'],
+    ['country_id' => 3, 'name' => 'Quebec'],
+  ];
+  foreach ($states as $state) {
+    $database->insert($state_table_name)
+      ->fields($state)
+      ->execute();
+  }
+  $district_table_name = 'district';
+  $district_table_schema = [
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'size' => 'big',
+        'not null' => TRUE,
+      ],
+      'state_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'name' => [
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 100,
+      ],
+    ],
+    'primary key' => ['id'],
+    'foreign keys' => [
+      'state_id' => [
+        'table' => 'state',
+        'column' => 'id',
+      ],
+    ],
+  ];
+  $schema->createTable($district_table_name, $district_table_schema);
+  $districts = [
+    ['state_id' => 1, 'name' => 'Los Angeles'],
+    ['state_id' => 1, 'name' => 'San Francisco'],
+    ['state_id' => 2, 'name' => 'New York City'],
+    ['state_id' => 2, 'name' => 'Albany'],
+    ['state_id' => 3, 'name' => 'Houston'],
+    ['state_id' => 3, 'name' => 'Austin'],
+    ['state_id' => 4, 'name' => 'London'],
+    ['state_id' => 4, 'name' => 'Manchester'],
+    ['state_id' => 5, 'name' => 'Edinburgh'],
+    ['state_id' => 5, 'name' => 'Glasgow'],
+    ['state_id' => 6, 'name' => 'Toronto'],
+    ['state_id' => 6, 'name' => 'Ottawa'],
+  ];
+  foreach ($districts as $district) {
+    $database->insert($district_table_name)
+      ->fields($district)
+      ->execute();
+  }
+}

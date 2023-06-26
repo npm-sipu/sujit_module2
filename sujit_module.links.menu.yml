@@ -1,0 +1,5 @@
+system.admin.view:
+  title: Hello World #menu title
+  route_name: sujit_module.hello_world  #where the menu should take us to
+  parent: system.admin #parent menu
+  menu_name: menu #menu name
